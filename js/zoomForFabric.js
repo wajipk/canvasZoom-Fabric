@@ -31,7 +31,7 @@ fabric.util.object.extend(fabric.Canvas.prototype, /** @lends fabric.StaticCanva
     getFullZoom: function() {
         return this.fullZoomLevel;
     },
-    updateCanvasDeminsion: function(w, h) {
+    updateCanvasDimension: function(w, h) {
         this.ZoomCanvasWidth = w;
         this.ZoomCanvasHeight = h;
     },

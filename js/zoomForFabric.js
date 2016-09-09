@@ -11,6 +11,9 @@ fabric.util.object.extend(fabric.Canvas.prototype, /** @lends fabric.StaticCanva
         if (this.discardActiveObject) {
             this.discardActiveObject();
         }
+        var _width  = (self.ZoomCanvasWidth      * (self.fullZoomLevel/100);
+        var _height = (self.ZoomCanvasHeight   * (self.fullZoomLevel/100);
+        if(_width<0 || _height<0) return;
         for (var i = 0, len = this._objects.length; i < len; i++) {
             var obj = this._objects[i];
             if (obj) {
@@ -18,8 +21,8 @@ fabric.util.object.extend(fabric.Canvas.prototype, /** @lends fabric.StaticCanva
                 obj.setCoords();
             }
         }
-        this.setWidth(self.ZoomCanvasWidth      * (self.fullZoomLevel/100))
-            .setHeight(self.ZoomCanvasHeight    * (self.fullZoomLevel/100)) 
+        this.setWidth (_width<0  ? 0 : _width)
+            .setHeight(_height<0 ? 0 : _height) 
             .renderAll();
     },
     _zoomObject: function(object) {
@@ -31,13 +34,16 @@ fabric.util.object.extend(fabric.Canvas.prototype, /** @lends fabric.StaticCanva
     getFullZoom: function() {
         return this.fullZoomLevel;
     },
+    updateCanvasDimension: function(w, h) {
+        this.ZoomCanvasWidth = w;
+        this.ZoomCanvasHeight = h;
+    },
     fullZoomInit: function() {
         var self = this;
         this.ZoomCanvasWidth    = this.getWidth();
         this.ZoomCanvasHeight   = this.getHeight();
-        this.setBackgroundColor('#ff0');
         this.on('object:added', function(o) {
-            self._updateZoomOriginal(o);
+            self._updateZoomOriginal(o.target);
             o.target.set({
                 left: o.target.zoomOriginal.left,
                 top: o.target.zoomOriginal.top,
@@ -46,22 +52,22 @@ fabric.util.object.extend(fabric.Canvas.prototype, /** @lends fabric.StaticCanva
             }).setCoords();
         });
         this.on('object:moving', function(o) {
-            self._updateZoomOriginal(o);
+            self._updateZoomOriginal(o.target);
         });
         this.on('object:scaling', function(o) {
-            self._updateZoomOriginal(o);
+            self._updateZoomOriginal(o.target);
         });
         this.on('object:modified', function(o) {
-            self._updateZoomOriginal(o);
+            self._updateZoomOriginal(o.target);
         });
     },
     _updateZoomOriginal: function(o) {
         self = this;
-        o.target.zoomOriginal = {
-            left    : (o.target.get("left")    / (self.fullZoomLevel / 100)),
-            top     : (o.target.get("top")     / (self.fullZoomLevel / 100)),
-            scaleX  : (o.target.get("scaleX")  / (self.fullZoomLevel / 100)),
-            scaleY  : (o.target.get("scaleY")  / (self.fullZoomLevel / 100))
+        o.zoomOriginal = {
+            left    : (o.left    * (self.fullZoomLevel / 100)),
+            top     : (o.top     * (self.fullZoomLevel / 100)),
+            scaleX  : (o.scaleX  * (self.fullZoomLevel / 100)),
+            scaleY  : (o.scaleY  * (self.fullZoomLevel / 100))
         }
     },
 });

@@ -2,6 +2,11 @@ fabric.util.object.extend(fabric.Canvas.prototype, /** @lends fabric.StaticCanva
     fullZoomLevel: 100,
     ZoomCanvasWidth : 0,
     ZoomCanvasHeight : 0,
+    /**
+     * [Zoom Objects and Canvas]
+     * @param  {[type]} level [Defines level for zoom]
+     * @return {[type]}       [null]
+     */
     fullZoom: function(level) {
         self = this;
         this.fullZoomLevel = level;
@@ -43,21 +48,12 @@ fabric.util.object.extend(fabric.Canvas.prototype, /** @lends fabric.StaticCanva
         this.ZoomCanvasWidth    = this.getWidth();
         this.ZoomCanvasHeight   = this.getHeight();
         this.on('object:added', function(o) {
-            self._updateZoomOriginal(o.target);
-            o.target.set({
-                left: o.target.zoomOriginal.left,
-                top: o.target.zoomOriginal.top,
-                scaleX: o.target.zoomOriginal.scaleX,
-                scaleY: o.target.zoomOriginal.scaleY
-            }).setCoords();
+            self._updateZoomOriginal(o.target)._updateObject(o.target);
         });
         this.on('object:moving', function(o) {
             self._updateZoomOriginal(o.target);
         });
         this.on('object:scaling', function(o) {
-            self._updateZoomOriginal(o.target);
-        });
-        this.on('object:modified', function(o) {
             self._updateZoomOriginal(o.target);
         });
     },
@@ -69,5 +65,14 @@ fabric.util.object.extend(fabric.Canvas.prototype, /** @lends fabric.StaticCanva
             scaleX  : (o.scaleX  * (self.fullZoomLevel / 100)),
             scaleY  : (o.scaleY  * (self.fullZoomLevel / 100))
         }
+    },
+    _updateObject: function(o) {
+        self = this;
+        o.set({
+            left    : (ozoomOriginal.left    / (self.fullZoomLevel / 100)),
+            top     : (ozoomOriginal.top     / (self.fullZoomLevel / 100)),
+            scaleX  : (ozoomOriginal.scaleX  / (self.fullZoomLevel / 100)),
+            scaleY  : (ozoomOriginal.scaleY  / (self.fullZoomLevel / 100))
+        })
     },
 });
